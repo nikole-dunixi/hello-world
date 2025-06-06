@@ -17,6 +17,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	remoteAddr := r.RemoteAddr
+	if xForwardedFor, ok := r.Header[`X-Forwarded-For`]; ok && len(xForwardedFor) > 0 {
+		remoteAddr = xForwardedFor[0]
+	} else if xForwardedHost, ok := r.Header[`X-Forwarded-Host`]; ok && len(xForwardedHost) > 0 {
+		remoteAddr = xForwardedHost[0]
+	}
 	epoch := time.Now().Format(time.RFC3339Nano)
 	msg := fmt.Sprintf("Hello, %s! I'm %s! [%s]", remoteAddr, hostname, epoch)
 	log.Println(msg)
